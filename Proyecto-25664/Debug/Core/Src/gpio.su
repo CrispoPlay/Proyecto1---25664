@@ -1,0 +1,9 @@
+../Core/Src/gpio.c:4:5:gpioReader	16	static
+../Core/Src/gpio.c:9:6:gpioInit	16	static
+../Core/Src/gpio.c:16:6:gpioOutputRange	32	static
+../Core/Src/gpio.c:23:6:gpioInputRange	32	static
+../Core/Src/gpio.c:30:6:gpioOutput	16	static
+../Core/Src/gpio.c:36:6:gpioInput	16	static
+../Core/Src/gpio.c:41:6:gpioAlternative	16	static
+../Core/Src/gpio.c:47:6:digitalWrite	24	static
+../Core/Src/gpio.c:53:6:secuencia	24	static

@@ -1,0 +1,7 @@
+../Core/Src/main.c:12:6:pinesInit	1
+../Core/Src/main.c:27:6:baudRateUsart	1
+../Core/Src/main.c:32:6:avisoMax	2
+../Core/Src/main.c:42:6:avisoMin	2
+../Core/Src/main.c:53:6:botonesESP32	8
+../Core/Src/main.c:93:6:mandarESP32	2
+../Core/Src/main.c:103:5:main	21

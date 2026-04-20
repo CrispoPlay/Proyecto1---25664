@@ -1,0 +1,7 @@
+../Core/Src/main.c:12:6:pinesInit	8	static
+../Core/Src/main.c:27:6:baudRateUsart	8	static
+../Core/Src/main.c:32:6:avisoMax	32	static
+../Core/Src/main.c:42:6:avisoMin	32	static
+../Core/Src/main.c:53:6:botonesESP32	24	static
+../Core/Src/main.c:93:6:mandarESP32	16	static
+../Core/Src/main.c:103:5:main	80	static
