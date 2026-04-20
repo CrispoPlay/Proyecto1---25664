@@ -1,3 +1,15 @@
+/*
+Universidad del Valle de Guatemala
+Proyecto 1 - Programación de Microprocesadores
+Autor: Cristian Estuardo Orellana Dieguez
+
+Descripción:
+Módulo de temporización basado en el temporizador SysTick del microcontrolador
+STM32F4. Este archivo implementa una función de retardo en milisegundos mediante
+el uso de un contador interno, permitiendo la generación de pausas precisas
+necesarias para el control de tiempos en sistemas embebidos.
+*/
+
 #include "stm32f4xx.h"
 
 #define SYSTICK_LOAD_VAL      16000

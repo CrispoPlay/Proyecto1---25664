@@ -1,15 +1,31 @@
+/*
+Universidad del Valle de Guatemala
+Proyecto 1 - Programación de Microprocesadores
+Autor: Cristian Estuardo Orellana Dieguez
+
+main.c
+Sistema embebido implementado en un microcontrolador STM32F4 para el control
+de una secuencia de LEDs con velocidad variable. El sistema permite la interacción
+mediante botones físicos y comunicación UART con un ESP32 y una PC. Incluye
+funcionalidades de pausa, ajuste de velocidad y señalización acústica mediante buzzer.
+*/
+
 #include "gpio.h"
 #include "systick.h"
 #include "uart.h"
 #include "stm32f4xx.h"
 #include <stdio.h>
 
+////=========== Define de botones y buzzer ===============
 #define BotonSubir 6 //PA6 Boton1
 #define BotonBajar 7 //PA7 boton2
 #define BotonPausa 8 //PA8 Boton3
 #define Buzzer 11 //PA11 Buzzer
+
+//Array que contiene los niveles de velocidad
 char *velStr[3] = {"BAJA","MEDIA","ALTA"};
 
+//=========== Habilito puertos y seteo pines ===============
 void pinesInit(){
 	gpioInit(GPIOA); //Inicio el reloj del puerto A
 	gpioInit(GPIOB); //Inicio el reloj del puerto B
@@ -24,12 +40,12 @@ void pinesInit(){
 	usart2_init(); //Usart2 pines PA2 y PA3
 	usart1_init(); //Usart1 pines PA9 y PA10
 }
-
+//=========== Establezco el Baudrate de los USART ===============
 void baudRateUsart(){
 	usart1_set_baudrate(115200); //Baudrate del ESP32
 	usart2_set_baudrate(115200); //Baudrate del PC
 }
-
+//=========== Secuencia de parpadeo al llega a la velocidad maxima ===============
 void avisoMax(void){
     printf("MAX\r\n");
     for(int j = 0; j < 3; j++){
@@ -40,6 +56,7 @@ void avisoMax(void){
         digitalWrite(GPIOA, Buzzer, 0);
         systickDelayMs(50);
 }}
+//=========== Secuencia de parpadeo al llega a la velocidad minima ===============
 void avisoMin(void){
     printf("MIN\r\n");
     for(int j = 0; j < 3; j++){
@@ -50,7 +67,7 @@ void avisoMin(void){
         digitalWrite(GPIOA, Buzzer, 0);
         systickDelayMs(50);
 }}
-
+//=========== Lectura de ESP32 a través de UART1 ===============
 void botonesESP32(int *nivelVelocidad, int *pausado, int *velocidades){
     int dato1 = usart1_read();
 
@@ -90,7 +107,7 @@ void botonesESP32(int *nivelVelocidad, int *pausado, int *velocidades){
         }
     }
 }
-
+//=========== Manda caracteres a traveés de Usart1 ===============
 void mandarESP32(){
 	int dato2 = usart2_read();
 
@@ -100,7 +117,7 @@ void mandarESP32(){
 	    usart1_write(c);
 	}
 }
-
+//=========== Función principal MAIN ===============
 int main(void){
 	pinesInit(); //Inicializo todos los pines
 	baudRateUsart(); // Asigno los baudRate de los usart
@@ -112,20 +129,21 @@ int main(void){
 	    int pausado = 0;
 	    uint32_t contador = 0;
 	    int lastSubir = 0, lastBajar = 0, lastPausa = 0;
-	   // char *velStr[3] = {"BAJA","MEDIA","ALTA"};
 
 	    while(1){
-
+			//Delay, se ejecutará la cantidad de veces que se asigne el valor
 	        systickDelayMs(1);
 	        contador++;
 
 	        botonesESP32(&nivelVelocidad, &pausado, velocidades);
 	        mandarESP32();
 
+			//Lectura de los botones
 	        int subir = gpioReader(GPIOA, BotonSubir);
 	        int bajar = gpioReader(GPIOA, BotonBajar);
 	        int pausa = gpioReader(GPIOA, BotonPausa);
 
+			// Comprueba el estado del botón Subir y la variable lastSubir
 	        if(subir && !lastSubir){
 	            if(nivelVelocidad < 2){
 	                nivelVelocidad++;
@@ -138,6 +156,7 @@ int main(void){
 	        }
 	        lastSubir = subir;
 
+			// Comprueba el estado del botón bajar y la variable lastBajar
 	        if(bajar && !lastBajar){
 	            if(nivelVelocidad > 0){
 	                nivelVelocidad--;
@@ -149,6 +168,7 @@ int main(void){
 	        }
 	        lastBajar = bajar;
 
+			// Comprueba el estado del botón pausar y la variable ultima paisa
 	        if(pausa && !lastPausa){
 	            pausado = !pausado;
 	            if(pausado){
@@ -161,7 +181,7 @@ int main(void){
 	        }
 	        lastPausa = pausa;
 
-	        // -------- SECUENCIA --------
+	        // Secuencia
 	        if(!pausado){
 	            if(contador >= velocidades[nivelVelocidad]){
 	                contador = 0;

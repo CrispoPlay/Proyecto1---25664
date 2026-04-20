@@ -1,3 +1,16 @@
+/*
+Universidad del Valle de Guatemala
+Proyecto 1 - Programación de Microprocesadores
+Autor: Cristian Estuardo Orellana Dieguez
+
+Descripción:
+Módulo de comunicación UART para el microcontrolador STM32F4. Este archivo
+implementa la configuración e inicialización de los periféricos USART1 y USART2,
+permitiendo la transmisión y recepción de datos en comunicación serial. Incluye
+funciones para la configuración del baudrate, envío y lectura de datos, así como
+la redirección de la salida estándar (printf) a través de USART2 para depuración.
+*/
+
 #include "uart.h"
 #include "gpio.h"
 
@@ -18,7 +31,7 @@
 #define APB1_CLK   SYS_FREQ
 #define APB2_CLK   SYS_FREQ
 
-// ===== FUNCIONES INTERNAS =====
+// =========== Funciones internas ===========
 static uint16_t compute_uart_bd(uint32_t clk, uint32_t baud){
     return ((clk + (baud/2U)) / baud);
 }
@@ -27,7 +40,7 @@ static void uart_set_baudrate(USART_TypeDef *USARTx, uint32_t clk, uint32_t baud
     USARTx->BRR = compute_uart_bd(clk, baud);
 }
 
-// ===== BAUDRATE =====
+// =========== funciones Para establecer el Baudrate de los USART ===========
 void usart2_set_baudrate(uint32_t baud){
     uart_set_baudrate(USART2, APB1_CLK, baud);
     USART2->CR1 |= CR1_UE;
@@ -38,7 +51,7 @@ void usart1_set_baudrate(uint32_t baud){
     USART1->CR1 |= CR1_UE;
 }
 
-// ===== INIT USART2 (PC - STLINK) =====
+// =========== Inicia el USART2 - Pines 2 y 3 como alternativos y configuración de AF7 ===========
 void usart2_init(void){
     // Clocks
     RCC->AHB1ENR |= GPIOAEN;
@@ -61,7 +74,7 @@ void usart2_init(void){
     USART2->CR1 = CR1_TE | CR1_RE;
 }
 
-// ===== INIT USART1 (ESP32) =====
+// =========== Inicia el USART1 - Pines 9 y 10 como alternativos y configuración de AF7 ===========
 void usart1_init(void){
     // Clocks
     RCC->AHB1ENR |= GPIOAEN;
@@ -84,7 +97,7 @@ void usart1_init(void){
     USART1->CR1 = CR1_TE | CR1_RE;
 }
 
-// ===== WRITE =====
+// =========== Manda un Caracter a los USART ===========
 void usart2_write(char c){
     while(!(USART2->SR & SR_TXE));
     USART2->DR = c;
@@ -95,7 +108,7 @@ void usart1_write(char c){
     USART1->DR = c;
 }
 
-// ===== READ =====
+// =========== Lee un caracter desde USART ===========
 int usart2_read(void){
     if(USART2->SR & SR_RXNE){
         return USART2->DR;
@@ -110,7 +123,7 @@ int usart1_read(void){
     return -1;
 }
 
-// ===== PRINTF =====
+// =========== Implementación para Printf ===========
 int __io_putchar(int ch){
     usart2_write(ch);
     return ch;
